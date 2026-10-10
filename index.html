@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>شركة المجموعة الدولية — الإيصالات والمصاريف</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="top no-print">
+  <div class="brand"><img src="logo.png" alt="IG" class="brand-logo"><div><div class="brand-ar">شركة المجموعة الدولية</div><div class="brand-sub">للتجهيزات الزراعية والإنتاج الحيواني</div><div class="brand-en">INTERNATIONAL GROUP OF AGRICULTURAL EQUIPMENT AND LIVESTOCK PRODUCTION</div></div></div>
+  <nav>
+    <button class="nav-btn active" data-page="expenses">مصاريف البناية</button>
+    <button class="nav-btn" data-page="rent">إيصال قبض الإيجار</button>
+  </nav>
+</header>
+
+<main class="container">
+<section id="expenses" class="page active">
+  <div class="page-title no-print"><h1>مصاريف بناية أمزون</h1><p>تقرير التفاصيل وإيصالات القبض مستقلة عن بعضها</p></div>
+  <div class="panel no-print">
+    <div class="grid">
+      <label>السنة<input id="exYear" type="number" min="2000" max="2100"></label>
+      <label>الشهر<select id="exMonth"></select></label>
+      <label>رقم التقرير<input id="exReportNo" type="text" value="1"></label>
+      <label>رقم الاستعلام / الهاتف<input id="expenseContact" type="text" inputmode="tel" placeholder="اكتب رقم الهاتف أو الاستعلام"></label>
+    </div>
+    <div class="section-head"><h2>تفاصيل المصاريف</h2><button class="primary" id="addExpense">+ إضافة بند</button></div>
+    <div class="table-scroll">
+      <table id="expenseEditor"><thead><tr><th>#</th><th>جهة المصروف / الخدمة</th><th>نوع المصروف</th><th>المستفيد الخاص</th><th>المبلغ (د.ع)</th><th>التفاصيل</th><th>ملاحظات</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="totals"><span>إجمالي المصاريف</span><strong id="expenseTotal">0 د.ع</strong></div>
+
+    <div class="section-head"><h2>المستفيدون وحصصهم</h2><button class="primary" id="addBeneficiary">+ إضافة مستفيد</button></div>
+    <div class="table-scroll">
+      <table id="beneficiaryEditor"><thead><tr><th>#</th><th>اسم المستفيد</th><th>الوحدة / الطابق</th><th>عدد الوحدات</th><th>حصة المستفيد</th><th>المبلغ كتابة</th><th>توقيع المستلم</th><th>إيصال قبض</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="note-box"><label>الملاحظة السفلية <span class="red-label">(تظهر باللون الأحمر)</span><textarea id="expenseNote" placeholder="اكتب الملاحظة هنا"></textarea></label></div>
+    <div class="actions"><button class="primary" id="saveExpenseData">💾 حفظ البيانات</button><button class="print" id="printExpense">🖨 طباعة التقرير الكامل A4</button><button class="pdf" id="pdfExpense">📄 تحويل التقرير الكامل إلى PDF</button><button class="secondary" id="printAllReceipts">🧾 طباعة إيصالات جميع المستفيدين</button></div>
+  </div>
+  <article id="expensePreview" class="paper"></article>
+  <article id="expenseReceiptPreview" class="paper receipt-paper"></article>
+  <article id="allExpenseReceiptsPreview" class="paper"></article>
+</section>
+
+<section id="rent" class="page">
+  <div class="page-title no-print"><h1>إيصال قبض الإيجار</h1><p>إيصال مستقل — نفس التصميم عند الطباعة والتحويل إلى PDF</p></div>
+  <div class="panel no-print">
+    <div class="grid">
+      <label>رقم الوصل<input id="rentNo" type="text"></label>
+      <label>التاريخ<input id="rentDate" type="date"></label>
+      <label>#PO<input id="po" type="text"></label>
+      <label>#V<input id="vNo" type="text"></label>
+      <label class="wide">المستأجر
+        <select id="tenant"></select>
+      </label>
+      <div class="tenant-actions">
+        <button type="button" class="secondary" id="showTenantManager">إدارة المستأجرين</button>
+        <button type="button" class="primary" id="addTenant">+ إضافة مستأجر</button>
+      </div>
+      <div id="tenantManager" class="tenant-manager" hidden>
+        <div class="tenant-manager-head"><strong>قائمة المستأجرين</strong><button type="button" class="secondary" id="closeTenantManager">إغلاق</button></div>
+        <div class="tenant-manager-grid">
+          <label>اسم المستأجر<input id="tenantNameEdit" type="text" placeholder="اسم المستأجر"></label>
+          <label>رقم الهاتف<input id="tenantPhoneEdit" type="text" placeholder="رقم الهاتف"></label>
+          <label>الطابق / الوحدة<input id="tenantFloorEdit" type="text" placeholder="الطابق أو الوحدة"></label>
+          <div class="tenant-manager-actions"><button type="button" class="primary" id="saveTenant">حفظ المستأجر</button><button type="button" class="del" id="deleteTenant">حذف المستأجر</button></div>
+        </div>
+        <p class="muted">تعديل الاسم أو الهاتف أو الطابق يتم من هنا، وتبقى الإيصالات السابقة محفوظة بأسمائها المسجلة.</p>
+      </div>
+      <label>رقم الهاتف<input id="tenantPhone" type="text" readonly></label>
+      <label>الطابق / الوحدة<input id="floor" type="text" readonly></label>
+      <label>السنة<input id="rentYear" type="number" min="2000" max="2100"></label>
+      <label>من شهر<select id="rentFromMonth"></select></label>
+      <label>إلى شهر<select id="rentToMonth"></select></label>
+      <label>قيمة الإيجار السنوي (USD)<input id="annualRent" type="number" min="0" step="0.01"></label>
+      
+      <label>العملة<select id="currency"><option value="USD">دولار أمريكي (USD)</option><option value="IQD">دينار عراقي (IQD)</option></select></label>
+      <label id="rateWrap">سعر الصرف<input id="rate" type="number" min="0" step="0.01" placeholder="مثال: 1570"></label>
+      <label>طريقة الدفع<select id="payMethod"><option>نقدًا</option><option>تحويل مصرفي</option><option>صك</option></select></label>
+      <label class="wide">البيان<textarea id="rentDesc"></textarea></label>
+      <label class="wide">ملاحظات<textarea id="rentNote"></textarea></label>
+    </div>
+    <div class="calc-box">
+      <div><span>قيمة الإيجار السنوي</span><strong id="annualDisplay">0.00 USD</strong></div>
+      <div><span>الدفعة المستحقة</span><strong id="dueUsd">0.00 USD</strong></div>
+      <div><span>المبلغ المقبوض</span><strong id="paidDisplay">0.00</strong></div>
+      <div class="wide-calc"><span>المبلغ كتابةً</span><strong id="amountWords">—</strong></div>
+    </div>
+    <div class="actions"><button class="primary" id="saveRentData">💾 حفظ الإيصال</button><button class="print" id="printRent">🖨 طباعة A4</button><button class="pdf" id="pdfRent">📄 تحويل إلى PDF</button></div>
+  </div>
+  <article id="rentPreview" class="paper"></article>
+</section>
+</main>
+<footer class="site-footer no-print">شركة المجموعة الدولية للتجهيزات الزراعية والإنتاج الحيواني — INTERNATIONAL GROUP OF AGRICULTURAL EQUIPMENT AND LIVESTOCK PRODUCTION</footer>
+<script src="app.js"></script>
+</body>
+</html>
